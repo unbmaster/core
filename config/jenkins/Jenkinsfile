@@ -132,7 +132,7 @@ pipeline {
                     sh 'cat $env > .env'
                 }
                 script {
-                    sh 'docker service rm ${SERVICE_NAME}-dev' || true
+                    sh 'docker service rm ${SERVICE_NAME}-dev || true'
                     try {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-dev \
@@ -163,7 +163,7 @@ pipeline {
                     configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
                         sh 'cat $env > .env'
                     }
-                    sh 'docker service rm ${SERVICE_NAME}-prd' || true
+                    sh 'docker service rm ${SERVICE_NAME}-prd || true'
                     try {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-prd \
