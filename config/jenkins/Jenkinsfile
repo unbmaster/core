@@ -128,12 +128,6 @@ pipeline {
 
         stage('Deploy aplicação (Desenvolvimento)') {
             steps{
-                sh 'echo # PROJECT \
-                    PROJECT_NAME=$SERVICE_NAME \
-                    IMAGE_NAME=$IMAGE_NAME:$BUILD_NUMBER \
-                    IMAGE_TAG=$BUILD_NUMBER \
-                    ENV=DEV > .env'
-                sh 'cat .env-dev >> .env'
                 script {
                     sh 'docker service rm ${SERVICE_NAME}-dev || true'
                     try {
@@ -158,12 +152,6 @@ pipeline {
 
         stage ('Deploy aplicação (Produção)') {
             steps {
-                sh 'echo # PROJECT \
-                    PROJECT_NAME=$SERVICE_NAME \
-                    IMAGE_NAME=$IMAGE_NAME:$BUILD_NUMBER \
-                    IMAGE_TAG=$BUILD_NUMBER \
-                    ENV=PRD > .env'
-                sh 'cat .env-prd >> .env'
                 script {
                     slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
                     timeout(time: 10, unit: 'MINUTES') {
