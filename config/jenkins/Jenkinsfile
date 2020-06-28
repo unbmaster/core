@@ -134,10 +134,6 @@ pipeline {
                 script {
                     try {
                         sh 'docker service rm ${SERVICE_NAME}-dev'
-                    } catch (Exception e) {
-                        sh "echo $e; exit 1"
-                    }
-                    try {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-dev \
                             --mode replicated \
@@ -169,10 +165,6 @@ pipeline {
                     }
                     try {
                         sh 'docker service rm ${SERVICE_NAME}-prd'
-                    } catch (Exception e) {
-                        sh "echo $e; exit 1"
-                    }
-                    try {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-prd \
                             --mode replicated \
