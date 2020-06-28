@@ -39,7 +39,7 @@ pipeline {
                             withSonarQubeEnv('sonarqube') {
                                 sh """${scannerHome}/bin/sonar-scanner \
                                     -Dsonar.projectKey=${projectName} \
-                                    -Dsonar.analysis.mode=\
+                                    -Dsonar.analysis.mode=publish \
                                     -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
                                 """
                             }
