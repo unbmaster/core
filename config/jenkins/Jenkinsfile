@@ -92,15 +92,15 @@ pipeline {
                     try {
                         sh """
                             {
-                                docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
+                                docker run -d -p 8001:443 --name={$SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
                             } || { # catch
                                 docker container rm -f `docker container ls | grep 8001 | cut -d" " -f1`
-                                docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
+                                docker run -d -p 8001:443 --name={$SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
                             }
                         """
-                        sh 'docker exec -i $SERVICE_NAME ./var/www/vendor/bin/phpunit /var/www/tests'
+                        sh 'docker exec -i {$SERVICE_NAME}-test ./var/www/vendor/bin/phpunit /var/www/tests'
                         sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
-                        sh 'docker container rm -f $SERVICE_NAME'
+                        sh 'docker container rm -f {$SERVICE_NAME}-test'
                     } catch (Exception e) {
                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Teste unitário falhou"
                         sh "echo $e; exit 1"
