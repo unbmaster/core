@@ -1,195 +1,196 @@
 pipeline {
-   
-    environment {
-        registry = "$IMAGE_NAME"
-        BUILD_NUMBER = "${BUILD_NUMBER}"
-    }
-   
-    agent any
-   
-    stages {       
-       
 
-        stage('Checkout (GitHub)') {
-            steps{
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: INICIADO] Deploy para ambiente de desenvolvimento e produção em processamento"
-                cleanWs()
-                script {
-                    try {
-                        git([url: 'https://github.com/${IMAGE_NAME}', branch: 'develop'])
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Checkout no GitHub falhou"
-                        sh "echo $e; exit 1"
-                    }  
-                }
-            }
-        }
+    environment {
+        registry = "$IMAGE_NAME"
+        BUILD_NUMBER = "${BUILD_NUMBER}"
+    }
+
+    agent any
+
+    stages {
 
 
-        stage('Análise estática (SonarQube)') {
-            steps {
-                script {
-                    try {
-                        node {
-                            def scannerHome = tool 'SonarQubeScanner';
-                            def projectName = registry.replace('/', '-')
-                            withSonarQubeEnv('sonarqube') {
-                              sh """${scannerHome}/bin/sonar-scanner \
-                                      -Dsonar.projectKey=${projectName}
-                              """
-                            }
-                            timeout(time: 1, unit: 'HOURS') {
-                              script {
-                                def qg = waitForQualityGate()
-                                if (qg.status != 'OK') {
-                                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                                    sh "echo $e; exit 1"                                  
-                                }
-                              }
-                            }
-                            slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
-                        }
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Análise estática do código-fonte falhou"
-                        sh "echo $e; exit 1"
-                    }    
-                }
-            }
-        }
-       
-       
-        stage('Valida Dockerfile (Hadolint)') {
-            steps {
-                script {
-                    try {
-                         sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
-                        sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Dockerfile com problemas de sintaxe"
-                        sh "echo $e; exit 1"
-                    }
-                }
-            }
-        }
-       
-     
-        stage('Build imagem (Docker)') {
-            steps{
-                script {
-                    try {
-                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
-                        sh "echo $e; exit 1"
-                    }
-                }
-            }
-        }
-       
-       
-        stage('Teste unitário (PHPUnit)') {
-            steps {
-                script {
-                    try {
-                        sh """
-                            {
-                                docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
-                            } || { # catch
-                                docker container rm -f $SERVICE_NAME
-                                docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
-                            }
-                        """
-                        sh 'docker exec -i $SERVICE_NAME ./var/www/vendor/bin/phpunit /var/www/tests'
-                        sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
-                        sh 'docker container rm -f $SERVICE_NAME'
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Teste unitário falhou"
-                        sh "echo $e; exit 1"
-                    }
-                }
-            }
-        }    
-       
-       
-        stage('Deploy imagem (DockerHub)') {
-            steps{
-                script {
-                    try {
-                        docker.withRegistry( '', 'dockerhub' ) {
-                            dockerImage.push()
-                        }
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Publicação da imagem no Docker Hub falhou"
-                        ssh "echo $e; exit 1"
-                    }                    
-                }
-            }
-        }
-       
-        stage('Deploy aplicação (Desenvolvimento)') {
-            steps{
-                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
-                    sh 'cat $env > .env'
-                }
-                script {
-                    try {
-                        sh 'docker service rm ${SERVICE_NAME}-dev'
-                    } catch (Exception e) {
-                        sh "echo $e; exit 1"
-                    }
-                    try {
-                        sh   'docker service create \
-                              --name ${SERVICE_NAME}-dev \
-                              --mode replicated \
-                              --replicas 1 \
-                              --network app-net \
-                              --publish ${PORT_DEV}:443 \
-                              $IMAGE_NAME:$BUILD_NUMBER'
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de desenvolvimento falhou"
-                        sh "echo $e; exit 1"
-                        currentBuild.result = 'ABORTED'
-                        error('Erro')
-                    }
-                }  
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}:${PORT_DEV}/"
-            }
-        }        
-       
-       
-        stage ('Deploy aplicação (Produção)') {
-            steps {
-                script {
-                    slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
-                    timeout(time: 10, unit: 'MINUTES') {
-                        input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
-                    }
-                    configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
-                        sh 'cat $env > .env'
-                    }
-                    try {
-                        sh 'docker service rm ${SERVICE_NAME}-prd'
-                    } catch (Exception e) {
-                        sh "echo $e; exit 1"
-                    }
-                    try {
-                        sh   'docker service create \
-                              --name ${SERVICE_NAME}-prd \
-                              --mode replicated \
-                              --replicas 1 \
-                              --network app-net \
-                              --publish ${PORT_PRD}:443 \
-                              $IMAGE_NAME:$BUILD_NUMBER'
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de produção falhou"
-                        sh "echo $e; exit 1"
-                        currentBuild.result = 'ABORTED'
-                        error('Erro')
-                    }
-                }  
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_IP}:${PORT_PRD}/"
-            }
-        }
-         
-    }
+        stage('Checkout (GitHub)') {
+            steps{
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: INICIADO] Deploy para ambiente de desenvolvimento e produção em processamento"
+                cleanWs()
+                script {
+                    try {
+                        git([url: 'https://github.com/${IMAGE_NAME}', branch: 'develop'])
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Checkout no GitHub falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
+
+
+        stage('Análise estática (SonarQube)') {
+            steps {
+                script {
+                    try {
+                        node {
+                            def scannerHome = tool 'SonarQubeScanner';
+                            def projectName = registry.replace('/', '-')
+                            withSonarQubeEnv('sonarqube') {
+                                sh """${scannerHome}/bin/sonar-scanner \
+                                    -Dsonar.projectKey=${projectName}
+                                """
+                            }
+                            timeout(time: 1, unit: 'HOURS') {
+                                script {
+                                    def qg = waitForQualityGate()
+                                    if (qg.status != 'OK') {
+                                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                                        sh "echo $e; exit 1"
+                                    }
+                                }
+                            }
+                            slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
+                        }
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Análise estática do código-fonte falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
+
+
+        stage('Valida Dockerfile (Hadolint)') {
+            steps {
+                script {
+                    try {
+                        sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
+                        sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Dockerfile com problemas de sintaxe"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
+
+
+        stage('Build imagem (Docker)') {
+            steps{
+                script {
+                    try {
+                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
+
+
+        stage('Teste unitário (PHPUnit)') {
+            steps {
+                script {
+                    try {
+                        sh """
+                            {
+                                docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
+                            } || { # catch
+                                docker container rm -f $SERVICE_NAME
+                                docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
+                            }
+                        """
+                        sh 'docker exec -i $SERVICE_NAME ./var/www/vendor/bin/phpunit /var/www/tests'
+                        sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
+                        sh 'docker container rm -f $SERVICE_NAME'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Teste unitário falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
+
+
+        stage('Deploy imagem (DockerHub)') {
+            steps{
+                script {
+                    try {
+                        docker.withRegistry( '', 'dockerhub' ) {
+                            dockerImage.push()
+                        }
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Publicação da imagem no Docker Hub falhou"
+                        ssh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
+
+
+        stage('Deploy aplicação (Desenvolvimento)') {
+            steps{
+                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
+                    sh 'cat $env > .env'
+                }
+                script {
+                    try {
+                        sh 'docker service rm ${SERVICE_NAME}-dev'
+                    } catch (Exception e) {
+                        sh "echo $e; exit 1"
+                    }
+                    try {
+                        sh 'docker service create \
+                            --name ${SERVICE_NAME}-dev \
+                            --mode replicated \
+                            --replicas 1 \
+                            --network app-net \
+                            --publish ${PORT_DEV}:443 \
+                            $IMAGE_NAME:$BUILD_NUMBER'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de desenvolvimento falhou"
+                        sh "echo $e; exit 1"
+                        currentBuild.result = 'ABORTED'
+                        error('Erro')
+                    }
+                }
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}:${PORT_DEV}/"
+            }
+        }
+
+
+        stage ('Deploy aplicação (Produção)') {
+            steps {
+                script {
+                    slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
+                        timeout(time: 10, unit: 'MINUTES') {
+                        input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
+                    }
+                    configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
+                        sh 'cat $env > .env'
+                    }
+                    try {
+                        sh 'docker service rm ${SERVICE_NAME}-prd'
+                    } catch (Exception e) {
+                        sh "echo $e; exit 1"
+                    }
+                    try {
+                        sh 'docker service create \
+                            --name ${SERVICE_NAME}-prd \
+                            --mode replicated \
+                            --replicas 1 \
+                            --network app-net \
+                            --publish ${PORT_PRD}:443 \
+                            $IMAGE_NAME:$BUILD_NUMBER'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de produção falhou"
+                        sh "echo $e; exit 1"
+                        currentBuild.result = 'ABORTED'
+                        error('Erro')
+                    }
+                }
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_IP}:${PORT_PRD}/"
+            }
+        }
+
+    }
 }
