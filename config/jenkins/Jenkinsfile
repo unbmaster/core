@@ -52,8 +52,8 @@ pipeline {
                                     }
                                 }
                             }
+                            slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
                         }
-                        slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
                     } catch (Exception e) {
                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Análise estática do código-fonte falhou"
                         sh "echo $e; exit 1"
