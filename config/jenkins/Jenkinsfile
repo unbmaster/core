@@ -94,7 +94,7 @@ pipeline {
                             {
                                 docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
                             } || { # catch
-                                sh 'CONTAINER_TEST=$(docker container ls | grep 8001 | cut -d" " -f1)'
+                                CONTAINER_TEST=$(docker container ls | grep 8001 | cut -d" " -f1)
                                 docker container rm -f $CONTAINER_TEST
                                 docker run -d -p 8001:443 --name=$SERVICE_NAME $IMAGE_NAME:$BUILD_NUMBER
                             }
