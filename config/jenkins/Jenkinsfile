@@ -35,7 +35,8 @@ pipeline {
                             def projectName = registry.replace('/', '-')
                             withSonarQubeEnv('sonarqube') {
                                 sh """${scannerHome}/bin/sonar-scanner \
-                                    -Dsonar.projectKey=${projectName}
+                                    -Dsonar.projectKey=${projectName} \
+                                    -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
                                 """
                             }
                             timeout(time: 1, unit: 'HOURS') {
