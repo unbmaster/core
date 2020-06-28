@@ -128,9 +128,12 @@ pipeline {
 
         stage('Deploy aplicação (Desenvolvimento)') {
             steps{
-                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
-                    sh 'cat $env > .env'
-                }
+                sh 'echo # PROJECT \
+                    PROJECT_NAME=$SERVICE_NAME \
+                    IMAGE_NAME=$IMAGE_NAME:$BUILD_NUMBER \
+                    IMAGE_TAG=$BUILD_NUMBER \
+                    ENV=DEV > .env'
+                sh 'cat .env-dev >> .env'
                 script {
                     sh 'docker service rm ${SERVICE_NAME}-dev || true'
                     try {
@@ -155,13 +158,16 @@ pipeline {
 
         stage ('Deploy aplicação (Produção)') {
             steps {
+                sh 'echo # PROJECT \
+                    PROJECT_NAME=$SERVICE_NAME \
+                    IMAGE_NAME=$IMAGE_NAME:$BUILD_NUMBER \
+                    IMAGE_TAG=$BUILD_NUMBER \
+                    ENV=PRD > .env'
+                sh 'cat .env-prd >> .env'
                 script {
                     slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
-                        timeout(time: 10, unit: 'MINUTES') {
+                    timeout(time: 10, unit: 'MINUTES') {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
-                    }
-                    configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
-                        sh 'cat $env > .env'
                     }
                     sh 'docker service rm ${SERVICE_NAME}-prd || true'
                     try {
