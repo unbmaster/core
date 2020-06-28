@@ -28,32 +28,26 @@ pipeline {
             }
         }
 
-
         stage('Análise estática (SonarQube)') {
             steps {
                 script {
                     try {
-                        node {
-                            def scannerHome = tool 'SonarQubeScanner';
-                            def projectName = registry.replace('/', '-')
-                            withSonarQubeEnv('sonarqube') {
-                                sh """${scannerHome}/bin/sonar-scanner \
-                                    -Dsonar.projectKey=${projectName} \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
-                                """
-                            }
-                            timeout(time: 1, unit: 'HOURS') {
-                                script {
-                                    def qg = waitForQualityGate()
-                                    if (qg.status != 'OK') {
-                                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                                        sh "echo $e; exit 1"
-                                    }
-                                }
-                            }
-                            slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
+                        def scannerHome = tool 'SonarQubeScanner';
+                        def projectName = registry.replace('/', '-')
+                        withSonarQubeEnv('sonarqube') {
+                            sh """${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=${projectName} \
+                                -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
+                            """
                         }
+                        timeout(time: 10, unit: 'MINUTES') {
+                            def qg = waitForQualityGate()
+                            if (qg.status != 'OK') {
+                                error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                                sh "echo $e; exit 1"
+                            }
+                        }
+                        slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
                     } catch (Exception e) {
                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Análise estática do código-fonte falhou"
                         sh "echo $e; exit 1"
