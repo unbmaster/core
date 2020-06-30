@@ -24,7 +24,7 @@ pipeline {
                     submoduleCfg: [],
                     userRemoteConfigs: [[
                         credentialsId: 'github-ssh',
-                        url: 'git@github.com:unbmaster/${IMAGE_NAME}.git'
+                        url: 'git@github.com:${IMAGE_NAME}.git'
                     ]]
                 ])
             }
