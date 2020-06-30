@@ -37,7 +37,6 @@ pipeline {
                         withSonarQubeEnv('sonarqube') {
                             sh """${scannerHome}/bin/sonar-scanner \
                                 -Dsonar.projectKey=${projectName} \
-                                -Dforce.zero.coverage=false \
                                 -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
                             """
                         }
