@@ -157,7 +157,7 @@ pipeline {
                     sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-dev* -q); do docker cp .env-dev $cid:/var/www/.env; done'
                     sh 'rm .env-dev'
                 }
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}/${SERVICE_NAME}"
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}/dev/${SERVICE_NAME}"
             }
         }
 
