@@ -144,7 +144,6 @@ pipeline {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-dev \
                             --env ENVWORK=dev \
-                            --config source=/var/lib/jenkins/workspace/${JOB_NAME}/docker/.env-dev,target=/var/www/.env-dev \
                             --mode replicated \
                             --replicas 1 \
                             --network app-net \
@@ -177,7 +176,6 @@ pipeline {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-prd \
                             --env ENVWORK=prd \
-                            --config source=/var/lib/jenkins/workspace/${JOB_NAME}/docker/.env-prd,target=/var/www/.env-prd \
                             --mode replicated \
                             --replicas 1 \
                             --network app-net \
