@@ -140,7 +140,8 @@ pipeline {
                     try {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-dev \
-                            --env ENV=dev \
+                            --env ENVWORK=dev \
+                            --mount type=copy,source=/var/lib/jenkins/workspace/${JOB_NAME}/docker/.env-dev,target=/var/www/.env-dev,ro=true \
                             --mode replicated \
                             --replicas 1 \
                             --network app-net \
@@ -169,7 +170,8 @@ pipeline {
                     try {
                         sh 'docker service create \
                             --name ${SERVICE_NAME}-prd \
-                            --env ENV=prd \
+                            --env ENVWORK=prd \
+                            --mount type=copy,source=/var/lib/jenkins/workspace/${JOB_NAME}/docker/.env-prd,target=/var/www/.env-prd,ro=true \
                             --mode replicated \
                             --replicas 1 \
                             --network app-net \
