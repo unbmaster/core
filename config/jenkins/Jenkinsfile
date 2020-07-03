@@ -81,8 +81,6 @@ pipeline {
                         sh 'echo "JOB=${JOB_NAME}" >> .env'
                         sh 'echo "CONTAINER=${IMAGE_NAME}" >> .env'
                         sh 'echo "SERVICE=${SERVICE_NAME}" >> .env'
-                        sh 'echo "PORT_DEV=${PORT_DEV}" >> .env'
-                        sh 'echo "PORT_PRD=${PORT_PRD}" >> .env'
                         dockerImage = docker.build registry + ":$BUILD_NUMBER"
                     } catch (Exception e) {
                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
