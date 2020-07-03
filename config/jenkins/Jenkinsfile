@@ -79,7 +79,7 @@ pipeline {
                         sh 'echo "# Build" >> .env'
                         sh 'echo "BUILD=${BUILD_NUMBER}" >> .env'
                         sh 'echo "JOB=${JOB_NAME}" >> .env'
-                        sh 'echo "CONTAINER=${IMAGE_NAME}" >> .env'
+                        sh 'echo "IMAGE=${IMAGE_NAME}" >> .env'
                         sh 'echo "SERVICE=${SERVICE_NAME}" >> .env'
                         dockerImage = docker.build registry + ":$BUILD_NUMBER"
                     } catch (Exception e) {
