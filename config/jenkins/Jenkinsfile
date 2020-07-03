@@ -135,10 +135,6 @@ pipeline {
 
         stage('Deploy aplicação (Desenvolvimento)') {
             steps{
-                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
-                    sh 'cat $env >> /var/lib/jenkins/workspace/${JOB_NAME}/.env'
-                    sh 'cat $env >> .env'
-                }
                 script {
                     sh 'docker service rm ${SERVICE_NAME}-dev || true'
                     try {
@@ -157,6 +153,10 @@ pipeline {
                         error('Erro')
                     }
                 }
+                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
+                    sh 'cat $env >> .env'
+                    sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-dev* -q); do docker cp .env $cid:/var/www/.env; done'
+                }
                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}:${PORT_DEV}/"
             }
         }
@@ -164,10 +164,6 @@ pipeline {
 
         stage ('Deploy aplicação (Produção)') {
             steps {
-                configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
-                    sh 'cat $env >> /var/lib/jenkins/workspace/${JOB_NAME}/.env'
-                    sh 'cat $env >> .env'
-                }
                 script {
                     slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
                     timeout(time: 10, unit: 'MINUTES') {
@@ -189,6 +185,10 @@ pipeline {
                         currentBuild.result = 'ABORTED'
                         error('Erro')
                     }
+                }
+                configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
+                    sh 'cat $env >> .env'
+                    sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-prd* -q); do docker cp .env $cid:/var/www/.env; done'
                 }
                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_IP}:${PORT_PRD}/"
             }
