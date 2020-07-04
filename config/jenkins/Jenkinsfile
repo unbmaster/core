@@ -169,6 +169,13 @@ pipeline {
                     timeout(time: 10, unit: 'MINUTES') {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
                     }
+
+
+                    sshagent(['github-ssh']) {
+                      sh "git push origin master"
+                    }
+
+
                     sh 'docker service rm ${SERVICE_NAME}-prd || true'
                     try {
                         sh 'docker service create \
@@ -195,6 +202,7 @@ pipeline {
                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_IP}/${SERVICE_NAME}"
             }
         }
+
 
     }
 }
