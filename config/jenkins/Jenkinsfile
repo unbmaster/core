@@ -175,13 +175,28 @@ pipeline {
 
 
 
-withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-   sh("git remote add origin https://github.com/unbmaster/plano.git")
-   sh("git checkout master")
-   sh("git merge develop")
-   sh("git push origin master")
+// withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+//
+//    sh("git checkout master")
+//    sh("git merge develop")
+//    sh("git push origin master")
+// }
+
+withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-https',
+                            usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+
+        sh "git checkout master"
+        sh "git merge develop"
+        sh "git tag " + BUILD_NUMBER
+        sh "git push 'https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git' --tags"
 }
 
+
+
+//    sh("git remote add origin https://github.com/unbmaster/plano.git")
+//    sh("git checkout master")
+//    sh("git merge develop")
+//    sh("git push origin master")
 
 // withCredentials([
 //   usernamePassword(credentialsId: 'github-https', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')
