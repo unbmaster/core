@@ -3,7 +3,7 @@ pipeline {
     environment {
         registry = "${IMAGE_NAME}"
         BUILD_NUMBER = "${BUILD_NUMBER}"
-         GITUSER = credentials('github-ssh')
+         GITUSER = credentials('github-https')
     }
 
     agent any
