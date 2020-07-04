@@ -175,7 +175,7 @@ pipeline {
 
 
 
-withCredentials([sshUserPrivateKey(credentialsId: 'github-https', keyFileVariable: 'SSH_KEY')]) {
+withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
    sh("git push origin master")
 }
 
