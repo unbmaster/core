@@ -175,11 +175,17 @@ pipeline {
 
 
 //  sh 'git tag -a some.tag -m "some message"'
-  sh 'git push https://${GITUSER_USR}:${GITUSER_PSW}@github.com/unbmaster/plano.git'
+  //sh 'git push https://${GITUSER_USR}:${GITUSER_PSW}@github.com/unbmaster/plano.git'
 
 
 
-
+withCredentials([sshUserPrivateKey(credentialsId: 'github-https', keyFileVariable: 'GITHUB_KEY')]) {
+    sh 'echo ssh -i $GITHUB_KEY -l git -o StrictHostKeyChecking=no \\"\\$@\\" > run_ssh.sh'
+    sh 'chmod +x run_ssh.sh'
+    withEnv(['GIT_SSH=run_ssh.sh']) {
+        sh 'git push origin master'
+    }
+}
 
 
 
