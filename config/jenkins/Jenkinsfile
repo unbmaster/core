@@ -175,6 +175,7 @@ pipeline {
 sh """
 git fetch --all
 git checkout master
+git checkout develop
 git merge master
 """
 
@@ -194,12 +195,12 @@ git merge master
 //     }
 // }
 
-withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-   sh """
-   GIT_SSH_COMMAND = "ssh -i $SSH_KEY"
-   git push origin master
-   """
-}
+// withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+//    sh """
+//    GIT_SSH_COMMAND = "ssh -i $SSH_KEY"
+//    git push origin master
+//    """
+// }
 
 
 
