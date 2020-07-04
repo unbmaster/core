@@ -173,10 +173,7 @@ pipeline {
 
 
 sh """
-git fetch --all
-git checkout master
-git checkout develop
-git merge master
+git merge origin/master
 """
 
 //                         sshagent('github-ssh') {
