@@ -176,7 +176,8 @@ pipeline {
 
 
 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-   sh("git push -u origin master")
+   sh("git checkout master")
+   sh("git merge develop")
 }
 
 
