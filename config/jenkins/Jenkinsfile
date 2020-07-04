@@ -15,7 +15,7 @@ pipeline {
 
         stage('Checkout (GitHub)') {
             steps{
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: INICIADO] Deploy para ambiente de desenvolvimento e produção em processamento"
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: INICIADO] Deploy para ambiente de desenvolvimento e produção está em processamento"
                 cleanWs()
                 script {
                     try {
