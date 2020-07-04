@@ -172,7 +172,7 @@ pipeline {
 
 
 
-withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: '48bfc941-310e-4a0b-bf87-15bc4c4e06cd',
+withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-ssh',
                             usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
         sh "git checkout develop"
         sh "git checkout master"
