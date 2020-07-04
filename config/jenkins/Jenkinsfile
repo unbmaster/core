@@ -172,9 +172,18 @@ pipeline {
 
 
 
-sh """
-git merge origin/master
-"""
+withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: '48bfc941-310e-4a0b-bf87-15bc4c4e06cd',
+                            usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+        sh "git checkout develop"
+        sh "git checkout master"
+        sh "git merge develop"
+        sh "git tag " + BUILD_NUMBER
+        sh "git push 'https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git' --tags"
+}
+
+// sh """
+// git merge origin/master
+// """
 
 //                         sshagent('github-ssh') {
 //                             sh "git push origin master"
