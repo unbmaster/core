@@ -170,11 +170,12 @@ pipeline {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
                     }
 
-                    node {
+                    wrappers {
                         sshagent(['github-ssh']) {
-                          sh "git push origin master"
+                            sh "git push origin master"
                         }
                     }
+
 
 
                     sh 'docker service rm ${SERVICE_NAME}-prd || true'
