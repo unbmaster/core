@@ -170,11 +170,11 @@ pipeline {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
                     }
 
-                    wrappers {
+
                         sshagent('github-ssh') {
                             sh "git push origin master"
                         }
-                    }
+
 
 
 
