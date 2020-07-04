@@ -171,10 +171,11 @@ pipeline {
                     }
 
 
-                        sshagent('github-ssh') {
-                            sh "git push origin master"
-                        }
+                
 
+                        withCredentials([sshUserPrivateKey('github-ssh', 'SSH_KEY')]) {
+                           sh("git push origin master")
+                        }
 
 
 
