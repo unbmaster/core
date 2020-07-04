@@ -3,6 +3,7 @@ pipeline {
     environment {
         registry = "${IMAGE_NAME}"
         BUILD_NUMBER = "${BUILD_NUMBER}"
+         GITUSER = credentials('github-ssh')
     }
 
     agent any
@@ -172,14 +173,28 @@ pipeline {
 
 
 
-withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-ssh',
-                            usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-        sh "git checkout develop"
-        sh "git checkout master"
-        sh "git merge develop"
-        sh "git tag " + BUILD_NUMBER
-        sh "git push 'https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git' --tags"
-}
+
+//  sh 'git tag -a some.tag -m "some message"'
+  sh 'git push https://${GITUSER_USR}:${GITUSER_PSW}@github.com/unbmaster/plano.git'
+
+
+
+
+
+
+
+
+
+
+
+// withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-ssh',
+//                             usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+//         sh "git checkout develop"
+//         sh "git checkout master"
+//         sh "git merge develop"
+//         sh "git tag " + BUILD_NUMBER
+//         sh "git push 'https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git' --tags"
+// }
 
 // sh """
 // git merge origin/master
