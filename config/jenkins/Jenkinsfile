@@ -72,23 +72,23 @@ pipeline {
 //         }
 
 
-        stage('Build imagem (Docker)') {
-            steps{
-                script {
-                    try {
-                        sh 'echo "# Build" >> .env'
-                        sh 'echo "BUILD=${BUILD_NUMBER}" >> .env'
-                        sh 'echo "JOB=${JOB_NAME}" >> .env'
-                        sh 'echo "IMAGE=${IMAGE_NAME}" >> .env'
-                        sh 'echo "SERVICE=${SERVICE_NAME}" >> .env'
-                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
-                        sh "echo $e; exit 1"
-                    }
-                }
-            }
-        }
+//         stage('Build imagem (Docker)') {
+//             steps{
+//                 script {
+//                     try {
+//                         sh 'echo "# Build" >> .env'
+//                         sh 'echo "BUILD=${BUILD_NUMBER}" >> .env'
+//                         sh 'echo "JOB=${JOB_NAME}" >> .env'
+//                         sh 'echo "IMAGE=${IMAGE_NAME}" >> .env'
+//                         sh 'echo "SERVICE=${SERVICE_NAME}" >> .env'
+//                         dockerImage = docker.build registry + ":$BUILD_NUMBER"
+//                     } catch (Exception e) {
+//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
+//                         sh "echo $e; exit 1"
+//                     }
+//                 }
+//             }
+//         }
 
 
 //         stage('Teste unitário (PHPUnit)') {
@@ -131,35 +131,35 @@ pipeline {
 //         }
 
 
-        stage('Deploy aplicação (Desenvolvimento)') {
-            steps{
-                script {
-                    sh 'docker service rm ${SERVICE_NAME}-dev || true'
-                    try {
-                        sh 'docker service create \
-                            --name ${SERVICE_NAME}-dev \
-                            --env ENVWORK=dev \
-                            --mode replicated \
-                            --replicas 1 \
-                            --network app-net \
-                            --endpoint-mode dnsrr \
-                            $IMAGE_NAME:$BUILD_NUMBER'
-                    } catch (Exception e) {
-                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de desenvolvimento falhou"
-                        sh "echo $e; exit 1"
-                        currentBuild.result = 'ABORTED'
-                        error('Erro')
-                    }
-                }
-                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
-                    sh 'cat .env > .env-dev'
-                    sh 'cat $env >> .env-dev'
-                    sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-dev* -q); do docker cp .env-dev $cid:/var/www/.env; done'
-                    sh 'rm .env-dev'
-                }
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}/dev/${SERVICE_NAME}"
-            }
-        }
+//         stage('Deploy aplicação (Desenvolvimento)') {
+//             steps{
+//                 script {
+//                     sh 'docker service rm ${SERVICE_NAME}-dev || true'
+//                     try {
+//                         sh 'docker service create \
+//                             --name ${SERVICE_NAME}-dev \
+//                             --env ENVWORK=dev \
+//                             --mode replicated \
+//                             --replicas 1 \
+//                             --network app-net \
+//                             --endpoint-mode dnsrr \
+//                             $IMAGE_NAME:$BUILD_NUMBER'
+//                     } catch (Exception e) {
+//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de desenvolvimento falhou"
+//                         sh "echo $e; exit 1"
+//                         currentBuild.result = 'ABORTED'
+//                         error('Erro')
+//                     }
+//                 }
+//                 configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
+//                     sh 'cat .env > .env-dev'
+//                     sh 'cat $env >> .env-dev'
+//                     sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-dev* -q); do docker cp .env-dev $cid:/var/www/.env; done'
+//                     sh 'rm .env-dev'
+//                 }
+//                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}/dev/${SERVICE_NAME}"
+//             }
+//         }
 
 
         stage ('Deploy aplicação (Produção)') {
@@ -170,9 +170,10 @@ pipeline {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
                     }
 
-
-                    sshagent(['github-ssh']) {
-                      sh "git push origin master"
+                    node {
+                        sshagent(['github-ssh']) {
+                          sh "git push origin master"
+                        }
                     }
 
 
