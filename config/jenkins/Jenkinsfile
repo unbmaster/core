@@ -171,6 +171,13 @@ pipeline {
                     }
 
 
+
+sh """
+git fetch --all
+git checkout master
+git merge master
+"""
+
 //                         sshagent('github-ssh') {
 //                             sh "git push origin master"
 //                         }
