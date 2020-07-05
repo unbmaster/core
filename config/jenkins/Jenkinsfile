@@ -205,19 +205,20 @@ pipeline {
 //    sh("git push origin master")
 // }
 
-            GIT_CREDS = credentials('github-https')
+//             GIT_CREDS = credentials('github-https')
+//             sh """
+//                 cd /var/lib/jenkins/workspace/${JOB_NAME}
+//                 git config --global user.email "unbmaster@outlook.com"
+//                 git config --global user.name "UnBMaster"
+//                 git fetch
+//                 git config receive.denyCurrentBranch ignore
+//                 git checkout master
+//                 git merge develop
+//                 git push origin master
+//             """
+//             sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
 
-            sh """
-                cd /var/lib/jenkins/workspace/${JOB_NAME}
-                git config --global user.email "unbmaster@outlook.com"
-                git config --global user.name "UnBMaster"
-                git fetch
-                git config receive.denyCurrentBranch ignore
-                git checkout master
-                git merge develop
-                git push origin master
-            """
-            sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
+
 
 // git config receive.denyCurrentBranch ignore
 //                 git config --get user.email
