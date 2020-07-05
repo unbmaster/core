@@ -206,13 +206,18 @@ pipeline {
 // }
 
             GIT_CREDS = credentials('github-https')
-            sh '''
-                git config user.email "unbmaster@outlook.com"
-                git config user.name "UnBMaster"
-                git add .
-                git commit -m "Jenkins push to git"
-                git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/unbmaster/plano.git master
-            '''
+
+            sh """
+                cd ~
+                pwd
+            """
+//             sh '''
+//                 git config user.email "unbmaster@outlook.com"
+//                 git config user.name "UnBMaster"
+//                 git add .
+//                 git commit -m "Jenkins push to git"
+//                 git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/unbmaster/plano.git master
+//             '''
 
 
 
@@ -268,18 +273,18 @@ pipeline {
 
 
 
-withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-https',
-                            usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-
-    sh 'cd ~'
-    sh 'pwd'
+// withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-https',
+//                             usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+//
+//     sh 'cd ~'
+//     sh 'pwd'
 
 //         sh "git checkout develop"
 //         sh "git checkout master"
 //         sh "git merge develop"
 //         sh "git tag " + BUILD_NUMBER
 //         sh "git push 'https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git' --tags"
-}
+// }
 
 // sh """
 // git merge origin/master
