@@ -171,14 +171,16 @@ pipeline {
                     }
 
 
-
-
-
-withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-   sh("git checkout master")
-   sh("git merge develop")
-   sh("git push origin master")
+sshagent(['github-ssh']) {
+  sh "git push origin master"
 }
+
+
+// withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+//    sh("git checkout master")
+//    sh("git merge develop")
+//    sh("git push origin master")
+// }
 
 
 // withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-https',
