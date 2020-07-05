@@ -196,12 +196,14 @@ pipeline {
 
 
 
-withCredentials([usernamePassword(credentialsId: 'github-https', usernameVariable: 'username', passwordVariable: 'password')]) {
-    sh("git push https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git")
+// withCredentials([usernamePassword(credentialsId: 'github-https', usernameVariable: 'username', passwordVariable: 'password')]) {
+//     sh("git push https://${env.USERNAME}:${env.PASSWORD}@github.com/unbmaster/plano.git")
+// }
+
+
+withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+   sh("git push origin master")
 }
-
-
-
 
 
 // withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
