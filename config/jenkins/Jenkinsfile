@@ -199,8 +199,10 @@ pipeline {
 
 
 withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+
    sh 'git config --global credential.helper cache'
    sh 'git config --global push.default simple'
+   sh("git remote add origin https://github.com/unbmaster/plano.git")
    sh("git pull develop")
    sh("git checkout master")
    sh("git merge develop")
