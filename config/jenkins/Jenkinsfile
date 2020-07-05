@@ -115,20 +115,20 @@ pipeline {
 //         }
 
 
-//         stage('Deploy imagem (DockerHub)') {
-//             steps{
-//                 script {
-//                     try {
-//                         docker.withRegistry( '', 'dockerhub' ) {
-//                             dockerImage.push()
-//                         }
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Publicação da imagem no Docker Hub falhou"
-//                         ssh "echo $e; exit 1"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Deploy imagem (DockerHub)') {
+            steps{
+                script {
+                    try {
+                        docker.withRegistry( '', 'dockerhub' ) {
+                            dockerImage.push()
+                        }
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Publicação da imagem no Docker Hub falhou"
+                        ssh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
 
 
 //         stage('Deploy aplicação (Desenvolvimento)') {
@@ -215,6 +215,7 @@ pipeline {
                 git config receive.denyCurrentBranch ignore
                 git checkout master
                 git merge develop
+                git push origin master
             """
             sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
 
