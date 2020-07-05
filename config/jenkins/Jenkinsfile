@@ -211,6 +211,7 @@ pipeline {
                 cd /var/lib/jenkins/workspace/${JOB_NAME}
                 git config --global user.email "unbmaster@outlook.com"
                 git config --global user.name "UnBMaster"
+                git remote add origin https://github.com/unbmaster/plano.git
                 git config receive.denyCurrentBranch ignore
                 git checkout master
                 git merge develop
