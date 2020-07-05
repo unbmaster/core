@@ -36,48 +36,48 @@ pipeline {
             }
         }
 
-//         stage('Análise estática (SonarQube)') {
-//             steps {
-//                 script {
-//                     try {
-//                         def scannerHome = tool 'SonarQubeScanner';
-//                         def projectName = registry.replace('/', '-')
-//                         withSonarQubeEnv('sonarqube') {
-//                             sh """${scannerHome}/bin/sonar-scanner \
-//                                 -Dsonar.projectKey=${projectName} \
-//                                 -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
-//                             """
-//                         }
-//                         timeout(time: 10, unit: 'MINUTES') {
-//                             def qg = waitForQualityGate()
-//                             if (qg.status != 'OK') {
-//                                 error "Pipeline aborted due to quality gate failure: ${qg.status}"
-//                                 sh "echo $e; exit 1"
-//                             }
-//                         }
-//                         slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_IP}:9001/dashboard?id="+projectName
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Análise estática do código-fonte falhou"
-//                         sh "echo $e; exit 1"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Análise estática (SonarQube)') {
+            steps {
+                script {
+                    try {
+                        def scannerHome = tool 'SonarQubeScanner';
+                        def projectName = registry.replace('/', '-')
+                        withSonarQubeEnv('sonarqube') {
+                            sh """${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=${projectName} \
+                                -Dsonar.projectBaseDir=/var/lib/jenkins/workspace/${JOB_NAME}/src
+                            """
+                        }
+                        timeout(time: 10, unit: 'MINUTES') {
+                            def qg = waitForQualityGate()
+                            if (qg.status != 'OK') {
+                                error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                                sh "echo $e; exit 1"
+                            }
+                        }
+                        slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SonarQube] Análise estática do código-fonte disponível em http://${SERVICE_ADDRESS}:9001/dashboard?id="+projectName
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Análise estática do código-fonte falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
 
 
-//         stage('Valida Dockerfile (Hadolint)') {
-//             steps {
-//                 script {
-//                     try {
-//                         sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
-//                         sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Dockerfile com problemas de sintaxe"
-//                         sh "echo $e; exit 1"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Valida Dockerfile (Hadolint)') {
+            steps {
+                script {
+                    try {
+                        sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
+                        sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Dockerfile com problemas de sintaxe"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
 
 
         stage('Build imagem (Docker)') {
@@ -99,28 +99,28 @@ pipeline {
         }
 
 
-//         stage('Teste unitário (PHPUnit)') {
-//             steps {
-//                 script {
-//                     try {
-//                         sh """
-//                             {
-//                                 docker run -d -p 8001:443 --name=${SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
-//                             } || { # catch
-//                                 docker container rm -f `docker container ls | grep 8001 | cut -d" " -f1`
-//                                 docker run -d -p 8001:443 --name=${SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
-//                             }
-//                         """
-//                         sh 'docker exec -i ${SERVICE_NAME}-test ./var/www/vendor/bin/phpunit /var/www/tests'
-//                         sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
-//                         sh 'docker container rm -f ${SERVICE_NAME}-test'
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Teste unitário falhou"
-//                         sh "echo $e; exit 1"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Teste unitário (PHPUnit)') {
+            steps {
+                script {
+                    try {
+                        sh """
+                            {
+                                docker run -d -p 8001:443 --name=${SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
+                            } || { # catch
+                                docker container rm -f `docker container ls | grep 8001 | cut -d" " -f1`
+                                docker run -d -p 8001:443 --name=${SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
+                            }
+                        """
+                        sh 'docker exec -i ${SERVICE_NAME}-test ./var/www/vendor/bin/phpunit /var/www/tests'
+                        sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
+                        sh 'docker container rm -f ${SERVICE_NAME}-test'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Teste unitário falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
 
 
         stage('Deploy imagem (DockerHub)') {
@@ -140,38 +140,38 @@ pipeline {
         }
 
 
-//         stage('Deploy aplicação (Desenvolvimento)') {
-//             steps{
-//                 script {
-//                     sh 'docker service rm ${SERVICE_NAME}-dev || true'
-//                     try {
-//                         sh 'docker service create \
-//                             --name ${SERVICE_NAME}-dev \
-//                             --env ENVWORK=dev \
-//                             --mode replicated \
-//                             --replicas 1 \
-//                             --network app-net \
-//                             --endpoint-mode dnsrr \
-//                             $IMAGE_NAME:$BUILD_NUMBER'
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de desenvolvimento falhou"
-//                         sh "echo $e; exit 1"
-//                         currentBuild.result = 'ABORTED'
-//                         error('Erro')
-//                     }
-//                 }
-//                 configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
-//                     sh 'cat .env > .env-dev'
-//                     sh 'cat $env >> .env-dev'
-//                     sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-dev* -q); do docker cp .env-dev $cid:/var/www/.env; done'
-//                     sh 'rm .env-dev'
-//                 }
-//                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_IP}/dev/${SERVICE_NAME}"
-//             }
-//         }
+        stage('Deploy aplicação (Desenvolvimento)') {
+            steps{
+                script {
+                    sh 'docker service rm ${SERVICE_NAME}-dev || true'
+                    try {
+                        sh 'docker service create \
+                            --name ${SERVICE_NAME}-dev \
+                            --env ENVWORK=dev \
+                            --mode replicated \
+                            --replicas 1 \
+                            --network app-net \
+                            --endpoint-mode dnsrr \
+                            $IMAGE_NAME:$BUILD_NUMBER'
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Deploy para ambiente de desenvolvimento falhou"
+                        sh "echo $e; exit 1"
+                        currentBuild.result = 'ABORTED'
+                        error('Erro')
+                    }
+                }
+                configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
+                    sh 'cat .env > .env-dev'
+                    sh 'cat $env >> .env-dev'
+                    sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-dev* -q); do docker cp .env-dev $cid:/var/www/.env; done'
+                    sh 'rm .env-dev'
+                }
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://${SERVICE_ADDRESS}/dev/${SERVICE_NAME}"
+            }
+        }
 
 
-        stage ('Deploy aplicação (Produção)') {
+        stage ('Merge e deploy aplicação (Produção)') {
             steps {
                 script {
                     slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
@@ -210,7 +210,7 @@ pipeline {
                     sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-prd* -q); do docker cp .env-prd $cid:/var/www/.env; done'
                     sh 'rm .env-prd'
                 }
-                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_IP}/${SERVICE_NAME}"
+                slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_ADDRESS}/${SERVICE_NAME}"
             }
         }
 
