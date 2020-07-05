@@ -25,6 +25,14 @@ pipeline {
                         sh "echo $e; exit 1"
                     }
                 }
+
+                configFileProvider([configFile(fileId: '2ad1d18f-fdb7-45ce-9221-d32de1253a8c', variable: 'crt')]) {
+                    sh 'cat $crt > ./docker/nginx/certificate.crt'
+                }
+
+                configFileProvider([configFile(fileId: '334c8150-490a-488c-a4bb-3cf625c794a7', variable: 'key')]) {
+                    sh 'cat $key > ./docker/nginx/private.key'
+                }
             }
         }
 
@@ -117,14 +125,6 @@ pipeline {
 
         stage('Deploy imagem (DockerHub)') {
             steps{
-
-                configFileProvider([configFile(fileId: '2ad1d18f-fdb7-45ce-9221-d32de1253a8c', variable: 'crt')]) {
-                    sh 'cat $crt > ./docker/nginx/certificate.crt'
-                }
-
-                configFileProvider([configFile(fileId: '334c8150-490a-488c-a4bb-3cf625c794a7', variable: 'key')]) {
-                    sh 'cat $key > ./docker/nginx/private.key'
-                }
 
                 script {
                     try {
