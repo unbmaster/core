@@ -202,11 +202,10 @@ withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable:
 
    sh 'git config --global credential.helper cache'
    sh 'git config --global push.default simple'
-   sh("git remote add origin https://github.com/unbmaster/plano.git")
    sh("git pull develop")
    sh("git checkout master")
    sh("git merge develop")
-   //sh("git push origin master")
+   sh("git push origin master")
 }
 
 
