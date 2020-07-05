@@ -186,7 +186,7 @@ node {
             userRemoteConfigs:
             [[
                 credentialsId: 'github-ssh',
-                url: 'plano.git',
+                url: 'https://github.com/unbmaster/plano.git',
                 refspec: ('+refs/pull-requests/*/from:refs/remotes/origin/pr/*/from'),
                 branch: ('origin/pr/${pullRequestId}/from')
             ]]
