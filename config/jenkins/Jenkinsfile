@@ -204,8 +204,8 @@ withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable:
    sh 'git config --global push.default simple'
 
    //sh("git checkout master")
-  // sh("git merge develop")
-   sh("git push origin master")
+   sh("git merge develop")
+  // sh("git push origin master")
 }
 
 
