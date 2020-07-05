@@ -140,7 +140,7 @@ pipeline {
         }
 
 
-        stage('Deploy aplicação (Desenvolvimento)') {
+        stage('Deploy aplicação (Dev)') {
             steps{
                 script {
                     sh 'docker service rm ${SERVICE_NAME}-dev || true'
@@ -171,7 +171,7 @@ pipeline {
         }
 
 
-        stage ('Merge e deploy aplicação (Produção)') {
+        stage ('Merge e deploy aplicação (Prd)') {
             steps {
                 script {
                     slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
