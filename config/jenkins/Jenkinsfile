@@ -209,6 +209,7 @@ pipeline {
             sh '''
                 git config user.email "unbmaster@outlook.com"
                 git config user.name "UnBMaster"
+                git pull develop
                 git add .
                 git commit -m "Jenkins push to git"
                 git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/unbmaster/plano.git master
