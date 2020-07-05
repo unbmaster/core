@@ -207,8 +207,8 @@ pipeline {
 
             GIT_CREDS = credentials('github-https')
             sh '''
-                git config --global credential.helper cache
-                git config --global push.default simple
+                git config credential.helper cache
+                git config push.default simple
                 git add .
                 git commit -m "Jenkins push to git"
                 git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/unbmaster/plano.git master
