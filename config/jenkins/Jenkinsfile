@@ -201,9 +201,17 @@ pipeline {
 // }
 
 
-withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-   sh("git push origin master")
-}
+// withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+//    sh("git push origin master")
+// }
+
+            GIT_CREDS = credentials('github-https')
+            sh '''
+                git add .
+                git commit -m "Jenkins push to git"
+                git push https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@github.com/unbmaster/plano.git master
+            '''
+
 
 
 // withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
