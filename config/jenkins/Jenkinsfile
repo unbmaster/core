@@ -172,50 +172,39 @@ pipeline {
 
 
 
-node {
-
-        checkout(
-        [
-            $class: 'GitSCM',
-            extensions: [
-                [$class: 'CleanCheckout'],
-            ],
-            branches: [
-                [name: 'master']
-            ],
-            userRemoteConfigs:
-            [[
-                credentialsId: 'github-ssh',
-                url: 'https://github.com/unbmaster/plano.git',
-                refspec: ('+refs/heads/*:refs/remotes/origin/* +refs/pull/*:refs/remotes/origin/pr/*'),
-                branch: ('origin/pr/${pullRequestId}/from')
-            ]]
-        ])
-
-}
-// sh 'git config --global credential.helper cache'
-// sh 'git config --global push.default simple'
+// node {
 //
-// checkout([
-//     $class: 'GitSCM',
-//     branches: [[name: 'develop']],
-//     extensions: [
-//         [$class: 'CloneOption', noTags: true, reference: '', shallow: true]
-//     ],
-//     submoduleCfg: [],
-//     userRemoteConfigs: [
-//         [ credentialsId: 'github-ssh', url: 'https://github.com/unbmaster/plano.git']
-//     ]
-// ])
-// sh "git checkout master"
-// sh "git merge develop"
-
-
-// withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-//    sh("git checkout master")
-//    sh("git merge develop")
-//    sh("git push origin master")
+//         checkout(
+//         [
+//             $class: 'GitSCM',
+//             extensions: [
+//                 [$class: 'CleanCheckout'],
+//             ],
+//             branches: [
+//                 [name: 'master']
+//             ],
+//             userRemoteConfigs:
+//             [[
+//                 credentialsId: 'github-ssh',
+//                 url: 'https://github.com/unbmaster/plano.git',
+//                 refspec: ('+refs/heads/*:refs/remotes/origin/* +refs/pull/*:refs/remotes/origin/pr/*'),
+//                 branch: ('origin/pr/${pullRequestId}/from')
+//             ]]
+//         ])
+//
 // }
+
+
+
+
+
+withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+   sh 'git config --global credential.helper cache'
+   sh 'git config --global push.default simple'
+   sh("git checkout master")
+   sh("git merge develop")
+   sh("git push origin master")
+}
 
 
 // withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'github-https',
