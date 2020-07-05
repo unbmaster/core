@@ -16,7 +16,7 @@ pipeline {
 
         stage('Checkout (GitHub)') {
             steps{
-                sh 'Ok ok ok '
+                sh 'echo "Ok ok ok"'
             }
         }
 
