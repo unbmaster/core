@@ -209,6 +209,8 @@ pipeline {
 
             sh """
                 cd /var/lib/jenkins/workspace/${JOB_NAME}
+                git config --global user.email "unbmaster@outlook.com"
+                git config --global user.name "UnBMaster"
                 git config receive.denyCurrentBranch ignore
                 git checkout master
                 git merge develop
