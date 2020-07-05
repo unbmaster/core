@@ -72,23 +72,23 @@ pipeline {
 //         }
 
 
-//         stage('Build imagem (Docker)') {
-//             steps{
-//                 script {
-//                     try {
-//                         sh 'echo "# Build" >> .env'
-//                         sh 'echo "BUILD=${BUILD_NUMBER}" >> .env'
-//                         sh 'echo "JOB=${JOB_NAME}" >> .env'
-//                         sh 'echo "IMAGE=${IMAGE_NAME}" >> .env'
-//                         sh 'echo "SERVICE=${SERVICE_NAME}" >> .env'
-//                         dockerImage = docker.build registry + ":$BUILD_NUMBER"
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
-//                         sh "echo $e; exit 1"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Build imagem (Docker)') {
+            steps{
+                script {
+                    try {
+                        sh 'echo "# Build" >> .env'
+                        sh 'echo "BUILD=${BUILD_NUMBER}" >> .env'
+                        sh 'echo "JOB=${JOB_NAME}" >> .env'
+                        sh 'echo "IMAGE=${IMAGE_NAME}" >> .env'
+                        sh 'echo "SERVICE=${SERVICE_NAME}" >> .env'
+                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Build da imagem Docker falhou"
+                        sh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
 
 
 //         stage('Teste unitário (PHPUnit)') {
