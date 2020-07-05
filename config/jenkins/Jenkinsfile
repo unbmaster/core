@@ -117,6 +117,15 @@ pipeline {
 
         stage('Deploy imagem (DockerHub)') {
             steps{
+
+                configFileProvider([configFile(fileId: '2ad1d18f-fdb7-45ce-9221-d32de1253a8c', variable: 'crt')]) {
+                    sh 'cat $crt > ./docker/nginx/certificate.crt'
+                }
+
+                configFileProvider([configFile(fileId: '334c8150-490a-488c-a4bb-3cf625c794a7', variable: 'key')]) {
+                    sh 'cat $key > ./docker/nginx/private.key'
+                }
+
                 script {
                     try {
                         docker.withRegistry( '', 'dockerhub' ) {
@@ -170,13 +179,13 @@ pipeline {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
                     }
 
-withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
-   sh 'git config --global credential.helper cache'
-   sh 'git config --global push.default simple'
-   sh("git checkout master")
-   sh("git merge develop")
-   sh("git push origin master")
-}
+                    withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+                       sh 'git config --global credential.helper cache'
+                       sh 'git config --global push.default simple'
+                       sh("git checkout master")
+                       sh("git merge develop")
+                       sh("git push origin master")
+                    }
 
                     sh 'docker service rm ${SERVICE_NAME}-prd || true'
                     try {
