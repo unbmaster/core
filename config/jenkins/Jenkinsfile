@@ -171,10 +171,22 @@ pipeline {
                     }
 
 
-sshagent(['github-ssh']) {
-    sh("git checkout master")
-    sh("git merge develop")
-}
+sh 'git config --global credential.helper cache'
+sh 'git config --global push.default simple'
+
+checkout([
+    $class: 'GitSCM',
+    branches: [[name: 'develop']],
+    extensions: [
+        [$class: 'CloneOption', noTags: true, reference: '', shallow: true]
+    ],
+    submoduleCfg: [],
+    userRemoteConfigs: [
+        [ credentialsId: 'github-ssh', url: 'https://github.com/unbmaster/plano.git']
+    ]
+])
+sh "git checkout master"
+sh "git merge develop"
 
 
 // withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
