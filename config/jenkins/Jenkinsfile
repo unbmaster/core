@@ -208,8 +208,13 @@ pipeline {
             GIT_CREDS = credentials('github-https')
 
             sh """
-                ls -la /var/lib/jenkins/workspace/${JOB_NAME}
+                cd /var/lib/jenkins/workspace/${JOB_NAME}
+                git checkout master
+                git merge develop
             """
+            sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
+            
+
 //             sh '''
 //                 git config user.email "unbmaster@outlook.com"
 //                 git config user.name "UnBMaster"
