@@ -209,11 +209,14 @@ pipeline {
 
             sh """
                 cd /var/lib/jenkins/workspace/${JOB_NAME}
+                git --git-dir=/var/lib/jenkins/workspace/${JOB_NAME}/.git
+                git config --get user.email
+                git config --get user.name
                 git checkout master
                 git merge develop
             """
             sh 'exit_code=$?; if [ $exit_code -ne 0 ]; then exit 1; fi'
-            
+
 
 //             sh '''
 //                 git config user.email "unbmaster@outlook.com"
