@@ -186,12 +186,12 @@ node {
             userRemoteConfigs:
             [[
                 credentialsId: 'github-ssh',
-                url: 'plano.git'
+                url: 'plano.git',
                 refspec: ('+refs/pull-requests/*/from:refs/remotes/origin/pr/*/from'),
                 branch: ('origin/pr/${pullRequestId}/from')
             ]]
         ])
- 
+
 }
 // sh 'git config --global credential.helper cache'
 // sh 'git config --global push.default simple'
