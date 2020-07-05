@@ -21,8 +21,8 @@ pipeline {
                     try {
                         git([url: 'https://github.com/${IMAGE_NAME}', branch: 'develop'])
                     } catch (Exception e) {
-                    slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Checkout no GitHub falhou"
-                    sh "echo $e; exit 1"
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Checkout no GitHub falhou"
+                        sh "echo $e; exit 1"
                     }
                 }
             }
@@ -208,8 +208,7 @@ pipeline {
             GIT_CREDS = credentials('github-https')
 
             sh """
-                cd ~
-                pwd
+                ls -la /var/lib/jenkins/workspace/${JOB_NAME}
             """
 //             sh '''
 //                 git config user.email "unbmaster@outlook.com"
