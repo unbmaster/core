@@ -169,6 +169,11 @@ pipeline {
                     timeout(time: 10, unit: 'MINUTES') {
                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
                     }
+
+withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
+   sh("git push origin master")
+}
+
                     sh 'docker service rm ${SERVICE_NAME}-prd || true'
                     try {
                         sh 'docker service create \
