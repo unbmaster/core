@@ -116,7 +116,7 @@ pipeline {
                     } catch (Exception e) {
                         sh "echo $e; exit 1"
                     }
-                    sleep 5
+                    sleep 10
                     sh 'docker exec -i $(docker container ls | grep ${SERVICE_NAME}-test | cut -d" " -f1) ./var/www/vendor/bin/phpunit /var/www/tests'
                     sleep 3
                     sh 'docker service rm ${SERVICE_NAME}-test || true'
