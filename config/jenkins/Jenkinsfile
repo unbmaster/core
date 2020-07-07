@@ -116,12 +116,12 @@ pipeline {
                     } catch (Exception e) {
                         sh "echo $e; exit 1"
                     }
-                    sleep 3
+                    sleep 5
                     sh 'docker exec -i $(docker container ls | grep ${SERVICE_NAME}-test | cut -d" " -f1) ./var/www/vendor/bin/phpunit /var/www/tests'
                     sleep 3
                     sh 'docker service rm ${SERVICE_NAME}-test || true'
 
-                                        
+
 //                         sh """
 //                             {
 //                                 docker run -d -p 8001:443 --name=${SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
