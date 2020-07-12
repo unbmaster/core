@@ -145,21 +145,21 @@ pipeline {
 //         }
 
 
-//         stage('Deploy imagem (DockerHub)') {
-//             steps{
-//
-//                 script {
-//                     try {
-//                         docker.withRegistry( '', 'dockerhub' ) {
-//                             dockerImage.push()
-//                         }
-//                     } catch (Exception e) {
-//                         slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Publicação da imagem no Docker Hub falhou"
-//                         ssh "echo $e; exit 1"
-//                     }
-//                 }
-//             }
-//         }
+        stage('Deploy imagem (DockerHub)') {
+            steps{
+
+                script {
+                    try {
+                        docker.withRegistry( '', 'dockerhub' ) {
+                            dockerImage.push()
+                        }
+                    } catch (Exception e) {
+                        slackSend color: "danger", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: FALHA] Publicação da imagem no Docker Hub falhou"
+                        ssh "echo $e; exit 1"
+                    }
+                }
+            }
+        }
 
 
         stage('Deploy aplicação (Desenvolvimento)') {
@@ -196,10 +196,10 @@ pipeline {
         stage ('Merge e deploy aplicação (Produção)') {
             steps {
                 script {
-//                     slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
-//                     timeout(time: 10, unit: 'MINUTES') {
-//                         input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
-//                     }
+                    slackSend color: "warning", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: AVISO] Deploy para ambiente de produção requer intervenção manual, acesse [Janela de 10 minutos]: ${JOB_URL}"
+                    timeout(time: 10, unit: 'MINUTES') {
+                        input(id: "Deploy Gate", message: "Deploy para produção?", ok: 'Deploy')
+                    }
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh', keyFileVariable: 'SSH_KEY')]) {
                        sh 'git config --global credential.helper cache'
