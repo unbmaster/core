@@ -186,7 +186,7 @@ pipeline {
                     sh 'cat .env > .env-dev'
                     sh 'cat $env >> .env-dev'
                     sh """
-                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-dev -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' \$f; done); do docker cp .env-dev \$cid:/var/www/.env; done
+                        for f in $(docker service ps -q ${SERVICE_NAME}-dev -f desired-state=running);do docker cp .env-dev $(docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f):/var/www/.env; done
                     """
                     sh 'rm .env-dev'
                 }
@@ -231,9 +231,7 @@ pipeline {
                 configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
                     sh 'cat .env > .env-prd'
                     sh 'cat $env >> .env-prd'
-                    sh """
-                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-prd -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' \$f; done); do docker cp .env-prd \$cid:/var/www/.env; done
-                    """
+                    sh 'for cid in $(docker ps --filter name=${SERVICE_NAME}-prd* -q); do docker cp .env-prd $cid:/var/www/.env; done'
                     sh 'rm .env-prd'
                 }
                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_ADDRESS}/${SERVICE_NAME}"
