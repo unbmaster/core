@@ -185,7 +185,9 @@ pipeline {
                 configFileProvider([configFile(fileId: '095d3769-69ec-438c-a483-8010be21b3b5', variable: 'env')]) {
                     sh 'cat .env > .env-dev'
                     sh 'cat $env >> .env-dev'
-                    sh "for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-dev -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f; done); do docker cp .env-dev $cid:/var/www/.env; done"
+                    sh """
+                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-dev -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f; done); do docker cp .env-dev $cid:/var/www/.env; done
+                    """
                     sh 'rm .env-dev'
                 }
                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de desenvolvimento bem-sucedido, disponível em https://dev.${SERVICE_ADDRESS}/${SERVICE_NAME}"
@@ -229,7 +231,9 @@ pipeline {
                 configFileProvider([configFile(fileId: '99a20e54-b6e3-441d-9471-bf57ccdf5252', variable: 'env')]) {
                     sh 'cat .env > .env-prd'
                     sh 'cat $env >> .env-prd'
-                    sh "for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-prd -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f; done); do docker cp .env-dev $cid:/var/www/.env; done"
+                    sh """
+                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-prd -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f; done); do docker cp .env-prd $cid:/var/www/.env; done
+                    """
                     sh 'rm .env-prd'
                 }
                 slackSend color: "good", message: "[Build <${BUILD_URL}|${JOB_NAME}#${BUILD_NUMBER}>: SUCESSO] Deploy para ambiente de produção bem-sucedido, disponível em https://${SERVICE_ADDRESS}/${SERVICE_NAME}"
