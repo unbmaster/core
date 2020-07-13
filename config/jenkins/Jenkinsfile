@@ -186,7 +186,7 @@ pipeline {
                     sh 'cat .env > .env-dev'
                     sh 'cat $env >> .env-dev'
                     sh """
-                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-dev -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f; done); do docker cp .env-dev $cid:/var/www/.env; done
+                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-dev -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' \$f; done); do docker cp .env-dev \$cid:/var/www/.env; done
                     """
                     sh 'rm .env-dev'
                 }
@@ -232,7 +232,7 @@ pipeline {
                     sh 'cat .env > .env-prd'
                     sh 'cat $env >> .env-prd'
                     sh """
-                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-prd -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' $f; done); do docker cp .env-prd $cid:/var/www/.env; done
+                        for cid in $(for f in $(docker service ps -q ${SERVICE_NAME}-prd -f desired-state=running);do docker inspect --format '{{.Status.ContainerStatus.ContainerID}}' \$f; done); do docker cp .env-prd \$cid:/var/www/.env; done
                     """
                     sh 'rm .env-prd'
                 }
