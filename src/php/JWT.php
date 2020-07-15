@@ -72,6 +72,11 @@ class JWT
     {
         try {
             $token = $request->getHeaderLine('Authorization');
+            if (!$token) {
+                $input = $request->getQueryParams();
+                $input     = filter_var_array($input, FILTER_SANITIZE_STRING);
+                return $token = $input['token'];
+            }
             $token = str_replace('Bearer ', '', $token);
             return $token;
         }
