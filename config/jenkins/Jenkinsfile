@@ -172,7 +172,7 @@ pipeline {
                             --env ENVWORK=dev \
                             --mode replicated \
                             --replicas 1 \
-                            --mount type=volume,source=db,target=/db \
+                            --mount type=volume,source=db-dev,target=/db \
                             --network app-net \
                             --endpoint-mode dnsrr \
                             $IMAGE_NAME:$BUILD_NUMBER'
@@ -217,7 +217,7 @@ pipeline {
                             --env ENVWORK=prd \
                             --mode replicated \
                             --replicas 1 \
-                            --mount type=volume,source=db,target=/db \
+                            --mount type=volume,source=db-prd,target=/db \
                             --network app-net \
                             --endpoint-mode dnsrr \
                             $IMAGE_NAME:$BUILD_NUMBER'
