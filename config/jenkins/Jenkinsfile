@@ -172,7 +172,7 @@ pipeline {
                             --env ENVWORK=dev \
                             --mode replicated \
                             --replicas 1 \
-                            --mount type=bind,source=`pwd`/docker/sqlite,target=/db \
+                            --mount type=bind,source=/db,target=/db \
                             --network app-net \
                             --endpoint-mode dnsrr \
                             $IMAGE_NAME:$BUILD_NUMBER'
@@ -217,7 +217,7 @@ pipeline {
                             --env ENVWORK=prd \
                             --mode replicated \
                             --replicas 1 \
-                            --mount type=bind,source=`pwd`/docker/sqlite,target=/db \
+                            --mount type=bind,source=/db,target=/db \
                             --network app-net \
                             --endpoint-mode dnsrr \
                             $IMAGE_NAME:$BUILD_NUMBER'
