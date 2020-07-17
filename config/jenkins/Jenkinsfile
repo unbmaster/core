@@ -172,7 +172,7 @@ pipeline {
                             --env ENVWORK=dev \
                             --mode replicated \
                             --replicas 1 \
-                            --mount type=volume,src=nfsvolume,dst=/db,,volume-driver=local,volume-opt=type=nfs,volume-opt=device=:/home/taylor/storage,volume-opt=o=addr=192.168.0.138, ro=true \
+                            --mount type=volume,src=nfsvolume,dst=/db,volume-driver=local,volume-opt=type=nfs,volume-opt=device=:/home/taylor/storage,volume-opt=o=addr=192.168.0.138,ro=true \
                             --network app-net \
                             --endpoint-mode dnsrr \
                             $IMAGE_NAME:$BUILD_NUMBER'
