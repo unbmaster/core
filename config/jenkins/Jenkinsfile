@@ -217,7 +217,7 @@ pipeline {
                             --env ENVWORK=prd \
                             --mode replicated \
                             --replicas 1 \
-                            --mount volume-driver=vieux/sshfs, src=sshvolume,target=/db,volume-opt=sshcmd=taylor@192.168.0.138:/home/taylor/storage,volume-opt=password=tc2531 \
+                            --mount type=volume,source=sshvolume,target=/db,volume-opt=sshcmd=taylor@192.168.0.138:/home/taylor/storage,volume-opt=password=tc2531 \
                             --network app-net \
                             --endpoint-mode dnsrr \
                             $IMAGE_NAME:$BUILD_NUMBER'
