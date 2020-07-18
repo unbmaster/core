@@ -210,6 +210,13 @@ pipeline {
                        sh("git push origin master")
                     }
 
+
+
+                    sh 'scp -r /var/lib/jenkins/workspace/${JOB_NAME}/docker/storage taylor@192.168.0.138:/home/taylor/storage'
+
+
+
+
                     sh 'docker service rm ${SERVICE_NAME}-prd || true'
                     try {
                         sh 'docker service create \
