@@ -1,0 +1,650 @@
+
+PUT /nginx
+{
+  "mappings" : {
+    "properties" : {
+      "@timestamp" : {
+        "type" : "date"
+      },
+      "@version" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "agent" : {
+        "properties" : {
+          "ephemeral_id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "hostname" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "name" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "type" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "version" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "bytes_sent" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "container" : {
+        "properties" : {
+          "id" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          },
+          "image" : {
+            "properties" : {
+              "name" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              }
+            }
+          },
+          "labels" : {
+            "properties" : {
+              "com_docker_compose_config-hash" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_container-number" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_oneoff" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_project" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_project_config_files" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_project_working_dir" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_service" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_compose_version" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_swarm_node_id" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_swarm_service_id" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_swarm_service_name" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_swarm_task" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_swarm_task_id" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "com_docker_swarm_task_name" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_build-date" : {
+                "type" : "date"
+              },
+              "org_label-schema_license" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_name" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_schema-version" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_url" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_usage" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_vcs-ref" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_vcs-url" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_vendor" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_label-schema_version" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_created" : {
+                "type" : "keyword"
+              },
+              "org_opencontainers_image_documentation" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_licenses" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_revision" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_source" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_title" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_url" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_vendor" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              },
+              "org_opencontainers_image_version" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              }
+            }
+          },
+          "name" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "ecs" : {
+        "properties" : {
+          "version" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "host" : {
+        "properties" : {
+          "name" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "http_host" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "http_referer" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "http_user_agent" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "input" : {
+        "properties" : {
+          "type" : {
+            "type" : "text",
+            "fields" : {
+              "keyword" : {
+                "type" : "keyword",
+                "ignore_above" : 256
+              }
+            }
+          }
+        }
+      },
+      "log" : {
+        "properties" : {
+          "file" : {
+            "properties" : {
+              "path" : {
+                "type" : "text",
+                "fields" : {
+                  "keyword" : {
+                    "type" : "keyword",
+                    "ignore_above" : 256
+                  }
+                }
+              }
+            }
+          },
+          "offset" : {
+            "type" : "long"
+          }
+        }
+      },
+      "message" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "proxy_pass" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "redirect_to" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "remote_addr" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "remote_user" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "request_method" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "request_protocol" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "request_resource" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "request_time" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "status" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "stream" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "tags" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "time_local" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "upstream_addr" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "upstream_cache_status" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "upstream_request_time" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      },
+      "uri" : {
+        "type" : "text",
+        "fields" : {
+          "keyword" : {
+            "type" : "keyword",
+            "ignore_above" : 256
+          }
+        }
+      }
+    }
+  }
+}
