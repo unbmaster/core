@@ -121,7 +121,7 @@ pipeline {
                     sleep 3
                     sh 'docker service rm ${SERVICE_NAME}-test || true'
 
- sh "echo $e; exit 1"
+ 
 //                         sh """
 //                             {
 //                                 docker run -d -p 8001:443 --name=${SERVICE_NAME}-test $IMAGE_NAME:$BUILD_NUMBER
